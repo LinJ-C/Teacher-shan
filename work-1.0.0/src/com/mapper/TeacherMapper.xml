@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<mapper namespace="com.mapper.TeacherMapper">
+	
+	    <!-- 登陆判断 -->
+	    <select id="login" parameterType="map" resultType="teacher" >
+	        select * from teacher where tId=#{tId} and passwd=#{passwd} 
+	    </select>
+	    
+	    <!-- 查询某个教师的工作量 -->
+	    <select id="scan_work" parameterType="String" resultType="Works" >
+	    	SELECT  creator,NAME,projectYear,startTime,projectmember.`createTime`,STATUS,score FROM 
+	    	projectmember INNER JOIN project ON projectmember.`projectId` = project.`projectId` 
+			WHERE project.tId=1002
+			ORDER BY creator
+	    </select>
+	    
+	    <!-- 查询所有工作量需要 用到分页 -->
+   	    <select id="publicity"  resultType="Works" >
+	    	SELECT  creator,NAME,projectYear,startTime,projectmember.`createTime`,STATUS,score FROM 
+	    	projectmember INNER JOIN project ON projectmember.`projectId` = project.`projectId` 
+			ORDER BY creator
+			<if test="start!=null and count!=null">
+                    limit #{start},#{count}
+            </if>
+	    </select>
+	    
+	    <!-- 实现分页 -->
+	     <select id="total" resultType="int">
+            select count(*) from  
+	    	projectmember INNER JOIN project ON projectmember.`projectId` = project.`projectId` 
+			ORDER BY creator  
+        </select>   
+        
+        <!-- 插入提交项目数据 -->
+        	<insert id="submit" parameterType="Project" >
+	        insert into project (projectYear,itemId,name,jobDescription,startTime,endTime,tName,tId) values 
+	        (#{projectYear},#{itemId},#{name},#{jobDescription},#{startTime},#{endTime},#{tName},#{tId})  
+	    </insert>
+                 
+		<!-- 查询当前年度 -->
+			<select id="years" resultType="String">
+				select projectYear from  currentyear
+			</select>
+
+	    
+	</mapper>
